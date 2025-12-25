@@ -2,7 +2,7 @@ name: CI - Build & Push FE + BE
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   build:
