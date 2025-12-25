@@ -1,31 +1,37 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Node.js CI
+name: CI - Build & Push FE + BE
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches: [main]
 
 jobs:
-  building:
-
+  build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+      - uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Backend
+      - name: Build backend image
+        run: |
+          docker build -t ghcr.io/itstrant1706/text-diff-backend:latest ./backend
+
+      - name: Push backend image
+        run: |
+          docker push ghcr.io/itstrant1706/text-diff-backend:latest
+
+      # Frontend
+      - name: Build frontend image
+        run: |
+          docker build -t ghcr.io/itstrant1706/text-diff-frontend:latest ./frontend
+
+      - name: Push frontend image
+        run: |
+          docker push ghcr.io/itstrant1706/text-diff-frontend:latest
