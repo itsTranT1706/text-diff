@@ -3,6 +3,9 @@ name: CI - Build & Push FE + BE
 on:
   push:
     branches: [master]
+permissions:
+  contents: read
+  packages: write  
 
 jobs:
   build:
