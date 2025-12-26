@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    image: ghcr.io/itstrant1706/text-diff-backend:latest
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/itstrant1706/text-diff-frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:4000
+    depends_on:
+      - backend
+    restart: unless-stopped
